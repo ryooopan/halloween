@@ -27,10 +27,21 @@ $(function() {
 
     drawAnimation();
 
+
+    var degree = 0
+
     function drawAnimation() {
         window.webkitRequestAnimationFrame(drawAnimation, canvas);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+
+        degree = degree + 0.1;
+
+        var x = Math.sin(degree) * 100 + 500;
+        var y = Math.cos(degree) * 100 + 500;
+
+        console.log(x)
+        console.log(y)      
 
         var freqByteData = new Uint8Array(analyser.frequencyBinCount);
         analyser.getByteFrequencyData(freqByteData); 
@@ -41,10 +52,29 @@ $(function() {
 //        $.drawCircle(volume);
 //        $.drawTime();
 
+        var colors = ['#E0E4CC', '#E0E4CC', '#F38630', '#FA6900', '#FF4E50', '#F9D423', '#E0E4CC', '#E0E4CC', '#F38630', '#FA6900' ];
+
+
+        for(i = 1; i < 10; i++) {
+            var x = Math.sin(degree * (1 + 0.1 * i)) * 100 + 1000;
+            var y = Math.cos(degree * (1 + 0.1 * i)) * 100 + 200;
+
+            var color = colors[i];
+
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            ctx.globalAlpha = 0.7;
+            ctx.arc(x , y, 10, 0, Math.PI*2, false);
+            ctx.fill();
+            ctx.closePath();            
+        }
+
+
+
 		ctx.beginPath();
 		ctx.fillStyle = color;
 		ctx.globalAlpha = 0.7;
-		ctx.arc(50, 50, volume * 3, 0, Math.PI*2, false);
+		ctx.arc(600, 400, volume * 3, 0, Math.PI*2, false);
 		ctx.fill();
 		ctx.closePath();
 
