@@ -13,41 +13,62 @@ $(function() {
 	var canvas = document.getElementById("main");
 	var ctx = canvas.getContext("2d");
 
+    var context = new webkitAudioContext();
+    var analyser = context.createAnalyser();
+    navigator.webkitGetUserMedia(
+        {video: false, audio: true}, 
+        function(stream) {
+            var microphone = context.createMediaStreamSource(stream);
+            microphone.connect(analyser);     
+        }
+    );
 
 	var color = "rgb(255, 145, 0)";
 
+    drawAnimation();
 
-	setInterval(function(){
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
+    function drawAnimation() {
+        window.webkitRequestAnimationFrame(drawAnimation, canvas);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+
+        var freqByteData = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(freqByteData); 
+
+        var volume = getAverageVolume(freqByteData);
+
+//        $.drawFftBars(freqByteData);
+//        $.drawCircle(volume);
+//        $.drawTime();
 
 		ctx.beginPath();
 		ctx.fillStyle = color;
 		ctx.globalAlpha = 0.7;
-		ctx.arc(50, 50, Math.random() * 100, 0, Math.PI*2, false);
+		ctx.arc(50, 50, volume * 3, 0, Math.PI*2, false);
 		ctx.fill();
 		ctx.closePath();
+
 
 		ctx.beginPath();
 		ctx.globalAlpha = 0.5;
 		ctx.fillStyle = 'rgb(255, 245, 0)'
-		ctx.arc(1000, 50, Math.random() * 150, 0, Math.PI*2, false);
+		ctx.arc(1000, 50, volume * 0.5, 0, Math.PI*2, false);
    		ctx.fill();
  		ctx.closePath();
 		
 		ctx.beginPath();
 		ctx.fillStyle = 'rgb(255, 195, 0)'
 		ctx.globalAlpha = 0.3;
-		ctx.arc(100, 300, Math.random() * 50, 0, Math.PI*2, false);
+		ctx.arc(100, 300, volume * 2, 0, Math.PI*2, false);
 		ctx.fill();
  		ctx.closePath();
 		
 		ctx.beginPath();
 		ctx.fillStyle = 'rgb(255, 100, 0)'
-		ctx.arc(800, 500, Math.random() * 100, 0, Math.PI*2, false);
+		ctx.arc(800, 500, volume * 1.5, 0, Math.PI*2, false);
 		ctx.fill();
 		ctx.fillStyle = color;
         ctx.closePath();
-
 
 		ctx.globalAlpha = 1;
 
@@ -61,7 +82,21 @@ $(function() {
 		ctx.closePath();
 
 
-	},1000);
+	}
+
+    function getAverageVolume(array) {
+        var values = 0;
+        var average;
+        var max = 0;
+        var length = array.length;
+
+        for (var i = 0; i < length; i++) {
+            values += Math.abs(array[i]);
+        }
+        average = values / length;
+        return average;
+    }
+
 
 });
 
