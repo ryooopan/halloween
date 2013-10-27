@@ -20,21 +20,46 @@ $(function() {
 	setInterval(function(){
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+		ctx.beginPath();
 		ctx.fillStyle = color;
-
-		ctx.fillRect(100, 500, 50, 50);
+		ctx.globalAlpha = 0.7;
 		ctx.arc(50, 50, Math.random() * 100, 0, Math.PI*2, false);
 		ctx.fill();
+		ctx.closePath();
+
+		ctx.beginPath();
+		ctx.globalAlpha = 0.5;
+		ctx.fillStyle = 'rgb(255, 245, 0)'
+		ctx.arc(1000, 50, Math.random() * 150, 0, Math.PI*2, false);
+   		ctx.fill();
+ 		ctx.closePath();
+		
+		ctx.beginPath();
+		ctx.fillStyle = 'rgb(255, 195, 0)'
+		ctx.globalAlpha = 0.3;
+		ctx.arc(100, 300, Math.random() * 50, 0, Math.PI*2, false);
+		ctx.fill();
+ 		ctx.closePath();
+		
+		ctx.beginPath();
+		ctx.fillStyle = 'rgb(255, 100, 0)'
+		ctx.arc(800, 500, Math.random() * 100, 0, Math.PI*2, false);
+		ctx.fill();
+		ctx.fillStyle = color;
+        ctx.closePath();
 
 
-//時計
+		ctx.globalAlpha = 1;
+
 		var dateFormat = new DateFormat("HH:mm:ss");
 		var string = dateFormat.format(new Date());
 
-	//	ctx.beginPath();
+		ctx.beginPath();
+
 		ctx.font = "300px 'Bigelow Rules'"
-		ctx.fillText(string, 100, 600);
-	//	ctx.closePath();
+		ctx.fillText(string, 150, 500);
+		ctx.closePath();
+
 
 	},1000);
 
@@ -49,7 +74,7 @@ $(function() {
         // ----------------------------------------
 
         var MAX_PARTICLES = 280;
-        var COLOURS = [ '#69D2E7', '#A7DBD8', '#E0E4CC', '#F38630', '#FA6900', '#FF4E50', '#F9D423' ];
+        var COLOURS = [, '#E0E4CC', '#F38630', '#FA6900', '#FF4E50', '#F9D423' ];
 
         var particles = [];
         var pool = [];
@@ -175,6 +200,8 @@ $(function() {
                 ctx.beginPath();
                 ctx.arc( this.x, this.y, this.radius, 0, TWO_PI );
                 ctx.fillStyle = this.color;
+                //透明化
+                	ctx.globalAlpha = 0.5;
                 ctx.fill();
             }
         };
