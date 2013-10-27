@@ -1,15 +1,5 @@
 $(function() {
 
-	$("#main").click(function(){
-		$("#main").animate({
-			width: "100px",
-			height: "100px"
-		},
-		500, function() {
-			alert("hfsn");
-		});
-	});
-
 	var canvas = document.getElementById("main");
 	var ctx = canvas.getContext("2d");
 
@@ -25,11 +15,47 @@ $(function() {
 
 	var color = "rgb(255, 145, 0)";
 
-    drawAnimation();
+    var colors = ['#E0E4CC', '#E0E4CC', '#F38630', '#FA6900', '#FF4E50', '#F9D423', '#E0E4CC', '#E0E4CC', '#F38630', '#FA6900' ];
+
+
 
 
     var degree = 0
 
+    var minCircleRadius = 40;
+    var maxCircleRadius = 140;
+    var circleRadiusProximity = 5;
+    var minCircleOpacity = .2;
+    var maxCircleOpacity = .9;
+    var circleOpacityProximity = 1000;
+
+
+    var beamColors = {
+        'beam1': '255,255,255',
+        'beam2': '255,255,255',
+        'beam3': '255,255,255',
+        'beam4': '255,255,255',
+        'beam5': '255,255,255',
+        'beam6': '255,255,255',
+        'beam7': '255,255,255',
+        'beam8': '255,255,255',
+        'beam9': '255,255,255',
+    }
+
+    var beams = [];
+    i = 0;
+    for (color in beamColors) {
+        beams[color] = {};
+        beams[color].fillColor  = colors[color];
+        beams[color].shiftX = beams[color].moveX = Math.random() * 2 > 1 ? parseInt(Math.random() * canvas.width / 2) - minCircleRadius : parseInt(Math.random() * canvas.width / -2) + minCircleRadius;
+        beams[color].shiftY = beams[color].moveY = Math.random() * 2 > 1 ? parseInt(Math.random() * canvas.height / 2) - minCircleRadius : parseInt(Math.random() * canvas.height / -2) + minCircleRadius;
+        i++;
+    }
+
+    console.log(beams);
+
+
+    drawAnimation();
     function drawAnimation() {
         window.webkitRequestAnimationFrame(drawAnimation, canvas);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -40,35 +66,73 @@ $(function() {
         var x = Math.sin(degree) * 100 + 500;
         var y = Math.cos(degree) * 100 + 500;
 
-        console.log(x)
-        console.log(y)      
-
         var freqByteData = new Uint8Array(analyser.frequencyBinCount);
         analyser.getByteFrequencyData(freqByteData); 
 
         var volume = getAverageVolume(freqByteData);
 
-//        $.drawFftBars(freqByteData);
-//        $.drawCircle(volume);
-//        $.drawTime();
 
-        var colors = ['#E0E4CC', '#E0E4CC', '#F38630', '#FA6900', '#FF4E50', '#F9D423', '#E0E4CC', '#E0E4CC', '#F38630', '#FA6900' ];
+        for (beam in beams) {
+            currentBeam = beams[beam];
+            if (currentBeam.shiftX > currentBeam.moveX) { currentBeam.shiftX--; }
+            if (currentBeam.shiftX < currentBeam.moveX) { currentBeam.shiftX++; }
+            if (currentBeam.shiftY > currentBeam.moveY) { currentBeam.shiftY--; }
+            if (currentBeam.shiftY < currentBeam.moveY) { currentBeam.shiftY++; }
+            if (currentBeam.shiftX == currentBeam.moveX && currentBeam.shiftY == currentBeam.moveY) {
+                currentBeam.moveX       = Math.random() * 2 > 1 ? parseInt(Math.random() * canvas.width / 2) - minCircleRadius : parseInt(Math.random() * canvas.width / -2) + minCircleRadius;
+                currentBeam.moveY       = Math.random() * 2 > 1 ? parseInt(Math.random() * canvas.height / 2) - minCircleRadius : parseInt(Math.random() * canvas.height / -2) + minCircleRadius;
+            }
+            circleRadius = maxCircleRadius - ((Math.abs(currentBeam.shiftX) + Math.abs(currentBeam.shiftY)) / circleRadiusProximity);
+            if (circleRadius < minCircleRadius) { circleRadius = minCircleRadius; }
 
-
-        for(i = 1; i < 10; i++) {
-            var x = Math.sin(degree * (1 + 0.1 * i)) * 100 + 1000;
-            var y = Math.cos(degree * (1 + 0.1 * i)) * 100 + 200;
-
-            var color = colors[i];
+            circleOpacity = maxCircleOpacity - ((Math.abs(currentBeam.shiftX) + Math.abs(currentBeam.shiftY)) / circleOpacityProximity);
+            if (circleOpacity < minCircleOpacity) { circleOpacity = minCircleOpacity; }
 
             ctx.beginPath();
-            ctx.fillStyle = color;
-            ctx.globalAlpha = 0.7;
-            ctx.arc(x , y, 10, 0, Math.PI*2, false);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';//'rgba('+currentBeam.fillColor+', '+circleOpacity+')';
+            ctx.beginPath();
+            ctx.arc(canvas.width/2 + currentBeam.shiftX, canvas.height/2 + currentBeam.shiftY, circleRadius, 0, 2*Math.PI);
             ctx.fill();
-            ctx.closePath();            
+            ctx.closePath();
         }
 
+        var posXs = [200, 234, 800, 300, 800];
+        var posYs = [200, 600, 700, 100, 200];
+
+        for(j = 1; j < 6; j++) {
+            for(i = 1; i < 10; i++) {
+                var x = Math.sin(degree * (1 + 0.1 * i)) * 30 * j + posXs[j];
+                var y = Math.cos(degree * (1 + 0.1 * i)) * 30 * j + posYs[j];
+
+                var color = colors[i];
+
+                ctx.beginPath();
+                ctx.fillStyle = color;
+                ctx.globalAlpha = 0.7;
+                ctx.arc(x , y, 10, 0, Math.PI*2, false);
+                ctx.fill();
+                ctx.closePath();            
+            }
+        }   
+
+
+/*
+        for(j = 1; j < 10; j++) {
+            for(i = 1; i < 10; i++) {                
+                var x = Math.sin(degree * (1 + 0.1 * i)) * 30 * j + Math.random() * 1000;
+                var y = Math.cos(degree * (1 + 0.1 * i)) * 30 * j + Math.random() * 1000;
+
+                var color = colors[i];
+
+                ctx.beginPath();
+                ctx.fillStyle = color;
+                ctx.globalAlpha = 0.7;
+                ctx.arc(x , y, 10, 0, Math.PI*2, false);
+                ctx.fill();
+                ctx.closePath();            
+            }
+        }   
+*/
 
 
 		ctx.beginPath();
@@ -106,11 +170,16 @@ $(function() {
 		var string = dateFormat.format(new Date());
 
 		ctx.beginPath();
-
 		ctx.font = "300px 'Bigelow Rules'"
-		ctx.fillText(string, 150, 500);
+        ctx.fillStyle = "rgb(255, 255, 255)";
+		ctx.fillText(string, 150, 300);
 		ctx.closePath();
 
+        ctx.beginPath();
+        ctx.font = "200px 'Bigelow Rules'"
+        ctx.fillStyle = "rgb(77, 0, 77)";
+        ctx.fillText("Happy Halloween", 500, 500);
+        ctx.closePath();
 
 	}
 
