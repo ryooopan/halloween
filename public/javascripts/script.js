@@ -137,14 +137,12 @@ $(function() {
 
     ctx.beginPath();
     ctx.fillStyle = color;
-    //		ctx.globalAlpha = 0.7;
     ctx.arc(600, 400, volume * 3, 0, Math.PI*2, false);
     ctx.fill();
     ctx.closePath();
 
 
     ctx.beginPath();
-    //		ctx.globalAlpha = 0.5;
     ctx.fillStyle = 'rgb(255, 245, 0)'
     ctx.arc(1000, 50, volume * 0.5, 0, Math.PI*2, false);
     ctx.fill();
@@ -152,7 +150,6 @@ $(function() {
     
     ctx.beginPath();
     ctx.fillStyle = 'rgb(255, 195, 0)'
-    //		ctx.globalAlpha = 0.3;
     ctx.arc(100, 300, volume * 2, 0, Math.PI*2, false);
     ctx.fill();
     ctx.closePath();
